@@ -66,10 +66,17 @@ const Home = () => {
         }
     }
 
+    const removeAddress = (address) => {
+        const copyValues = {...addressBalances}
+        delete copyValues[address]
+        setAddressBalance(copyValues);
+    }
+
     const addressList = Object.keys(addressBalances).map(key => (
-        <li
-        key={key}
-        ><strong>{key}</strong>: {addressBalances[key]}</li>
+        <li key={key}>
+            <strong>{key}</strong>: {addressBalances[key]}
+            <button onClick={() => removeAddress(key)}>Delete</button>
+        </li>
     ));
 
     return (
