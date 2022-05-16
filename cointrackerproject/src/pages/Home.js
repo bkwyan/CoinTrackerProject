@@ -14,7 +14,6 @@ HomePage
 
 Sample Address
 3E8ociqZa9mZUSwGdSmAEMAoAxBK3FNDcd
-12xQ9k5ousS8MqNsMBqHKtjAtCuKezm2Ju
 bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h
 bc1q0sg9rdst255gtldsmcf8rk0764avqy2h2ksqs5
 
@@ -53,16 +52,19 @@ const Home = () => {
     /*
     Adds an address to our database or in this case to the addressList
     Checks the address with Blockchair's address balance mass check endpoint
+    Balance is returned in satoshi
     */
     const addAddress = async (evt) => {
         evt.preventDefault();
         const balances = await getBalance(addressInput)
-        console.log(balances)
-        if(balances.length != 0){
-            setAddressBalance({...addressBalances, [addressInput]: balances[addressInput]})
-            console.log(addressBalances);
+        if(balances.length !== 0){
+            axios.post('http://localhost:8080/address/add', {
+                address: addressInput,
+                balance: balances[addressInput]/100000000
+            });
+            setAddressBalance({...addressBalances, [addressInput]: balances[addressInput]/100000000})
         } else{
-            console.log('No balances')
+            alert('Address was not found on the blockchain')
         }
     }
 
@@ -70,6 +72,10 @@ const Home = () => {
         const copyValues = {...addressBalances}
         delete copyValues[address]
         setAddressBalance(copyValues);
+        console.log(address);
+        axios.post('http://localhost:8080/address/remove', {
+            address: address,
+        });
     }
 
     const addressList = Object.keys(addressBalances).map(key => (
@@ -78,6 +84,15 @@ const Home = () => {
             <button onClick={() => removeAddress(key)}>Delete</button>
         </li>
     ));
+
+    useEffect(() => {
+        async function fetchBalances(){
+            var balance = await axios.get('http://localhost:8080/address/balance')
+            setAddressBalance(balance.data)
+        }
+        fetchBalances()
+        console.log('i ran');
+    }, []);
 
     return (
         <div>
