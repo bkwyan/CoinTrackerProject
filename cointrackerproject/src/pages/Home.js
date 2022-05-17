@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import {
+    HomeContainer,
+    FormWrapper,
+    AddressItem,
+    AddressList,
+} from '../styles/HomeStyle.js';
 
 /*
 Requirements
@@ -79,10 +85,10 @@ const Home = () => {
     }
 
     const addressList = Object.keys(addressBalances).map(key => (
-        <li key={key}>
+        <AddressItem key={key}>
             <strong>{key}</strong>: {addressBalances[key]}
             <button onClick={() => removeAddress(key)}>Delete</button>
-        </li>
+        </AddressItem>
     ));
 
     useEffect(() => {
@@ -95,17 +101,17 @@ const Home = () => {
     }, []);
 
     return (
-        <div>
-            <h1>Home</h1>
-                <form onSubmit={addAddress}>
+        <HomeContainer>
+            <h1>Address List</h1>
+                <AddressList>{addressList}</AddressList>
+                <FormWrapper onSubmit={addAddress}>
                     <label>
                         Address:
                         <input type='text' value={addressInput} onChange={e => setAddressInput(e.target.value)}/>
                     </label>
                     <input type="submit" value="Submit"/>
-                </form>
-                <ul>{addressList}</ul>
-        </div>
+                </FormWrapper>
+       </HomeContainer>
     );
 }
 export default Home;

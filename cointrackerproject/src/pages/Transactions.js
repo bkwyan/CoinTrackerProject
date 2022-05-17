@@ -1,10 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import {
+    TransactionContainer,
+    TransactionHeader,
+    TransactionContentContainer,
+    TransactionAddressWrapper,
+    TransactionListWrapper,
+    AddressList,
+    TransactionList,
+    AddressListHeader,
+    TransactionListHeader,
+} from '../styles/TransactionStyle.js';
 
 const Transactions = ({getGlobalAddresses}) => {
 
     const [addresses, setAddresses] = useState(['3E8ociqZa9mZUSwGdSmAEMAoAxBK3FNDcd', 'bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h', 'bc1q0sg9rdst255gtldsmcf8rk0764avqy2h2ksqs5']);
     const [transactions, setTransactions] = useState([]);
+    const [selectedAddress, setSelectedAddress] = useState("");
 
     const getTransactions = async (address) => {
         const transactions = await axios({
@@ -20,7 +32,12 @@ const Transactions = ({getGlobalAddresses}) => {
     }
 
     const addressList = addresses.map((address) => 
-        <li key={address} onClick={() => getTransactions(address)}>{address}</li>
+        <li key={address} onClick={() => {
+            getTransactions(address)
+            setSelectedAddress(address)
+        }}>
+        {address}
+        </li>
     );
 
     const transactionList = transactions.map((transaction) => 
@@ -36,11 +53,21 @@ const Transactions = ({getGlobalAddresses}) => {
     }, []);
 
     return (
-        <div>
-            <h1>Transactions</h1>
-            <ul>{addressList}</ul>
-            <ul>{transactionList}</ul>
-        </div>
+        <TransactionContainer>
+            <TransactionHeader>Transactions</TransactionHeader>
+            <TransactionContentContainer>
+                <TransactionAddressWrapper>
+                    <AddressListHeader>List of Addresses</AddressListHeader>
+                    <AddressList>{addressList}</AddressList>
+                </TransactionAddressWrapper>
+                <TransactionListWrapper>
+                    {selectedAddress.length > 0 &&
+                        <TransactionListHeader>List of Transactions for {selectedAddress}</TransactionListHeader>
+                    }
+                    <TransactionList>{transactionList}</TransactionList>
+                </TransactionListWrapper>
+            </TransactionContentContainer>
+        </TransactionContainer>
     );
 }
 export default Transactions;
