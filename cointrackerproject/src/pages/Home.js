@@ -46,7 +46,11 @@ const Home = () => {
     const [addressBalances, setAddressBalance] = useState({});
     const [addressInput, setAddressInput] = useState("");
 
+    /*
+    Retrieve the balance of the address that we submitted
+    */
     const getBalance = (address) => {
+        // Get the balance from Blockchair API
         const data = axios({
             method: 'get',
             url:`https://api.blockchair.com/bitcoin/addresses/balances?addresses=${address}`
@@ -59,6 +63,7 @@ const Home = () => {
     Adds an address to our database or in this case to the addressList
     Checks the address with Blockchair's address balance mass check endpoint
     Balance is returned in satoshi
+    100,000,000 BT is 1 Satoshi
     */
     const addAddress = async (evt) => {
         evt.preventDefault();
@@ -74,6 +79,9 @@ const Home = () => {
         }
     }
 
+    /*
+    Removes address from the database and from our local state
+    */
     const removeAddress = (address) => {
         const copyValues = {...addressBalances}
         delete copyValues[address]
@@ -84,6 +92,7 @@ const Home = () => {
         });
     }
 
+    // Function to help render the address list
     const addressList = Object.keys(addressBalances).map(key => (
         <AddressItem key={key}>
             <strong>{key}</strong>: {addressBalances[key]}
@@ -92,12 +101,12 @@ const Home = () => {
     ));
 
     useEffect(() => {
+        // Retrieves the balances for the address that are available to us
         async function fetchBalances(){
             var balance = await axios.get('http://localhost:8080/address/balance')
             setAddressBalance(balance.data)
         }
         fetchBalances()
-        console.log('i ran');
     }, []);
 
     return (
